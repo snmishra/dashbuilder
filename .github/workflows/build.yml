@@ -31,6 +31,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Cache Python packages
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-pypi-cache          
+          path: |
+            ~/.cache/pip
       - name: Build docs
         run: |
           pip install doc2dash
@@ -43,5 +49,5 @@ jobs:
       - name: Upload docset
         uses: actions/upload-artifact@v3
         with:
-          name: ${NAME}.tgz
-          path: docs/${NAME}.tgz
+          name: ${{ env.NAME }}.tgz
+          path: docs/${{ env.NAME }}.tgz
