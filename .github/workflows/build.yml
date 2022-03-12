@@ -40,7 +40,7 @@ jobs:
             ~/.cache/pip
       - name: Build docs
         run: |
-          pip install doc2dash
+          pip install doc2dash sphinx-rtd-theme
           git clone $REPO .
           cd docs
           test -f requirements.txt && pip install -r requirements.txt
