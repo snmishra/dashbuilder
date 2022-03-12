@@ -28,6 +28,7 @@ jobs:
       REPO: ${{ github.event.inputs.repo }}
       NAME: ${{ github.event.inputs.name }}
       ICON: ${{ github.event.inputs.icon }}
+      SPHINXBUILD: sphinx-build
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
