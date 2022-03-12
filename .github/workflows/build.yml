@@ -40,15 +40,17 @@ jobs:
             ~/.cache/pip
       - name: Build docs
         run: |
+          MAINDIR=$(pwd)
           pip install doc2dash sphinx-rtd-theme
           git clone $REPO .
-          cd docs
+          DOCDIR=$(dirname $(find doc* -name Makefile))
+          cd $DOCDIR
           test -f requirements.txt && pip install -r requirements.txt
           make html
           doc2dash ${NAME:+-n $NAME} ${ICON:+-i $ICON} _build/html
-          tar -czf ${NAME}.tgz ${NAME}.docset
+          tar -czf ${MAINDIR}/${NAME}.tgz ${NAME}.docset
       - name: Upload docset
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.NAME }}.tgz
-          path: docs/${{ env.NAME }}.tgz
+          path: ${{ env.NAME }}.tgz
