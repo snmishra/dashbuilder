@@ -45,7 +45,7 @@ jobs:
             ~/.cache/pip
       - name: Build docs
         run: |
-          pip install doc2dash sphinx-rtd-theme
+          pip install doc2dash sphinx-rtd-theme tox
           git clone $REPO .
           DOCDIR=$(dirname $(find doc* -name Makefile))
           if [ -f tox.ini ] && (tox -l | grep -q docs) ; then
