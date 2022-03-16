@@ -45,16 +45,18 @@ jobs:
             ~/.cache/pip
       - name: Build docs
         run: |
-          MAINDIR=$(pwd)
           pip install doc2dash sphinx-rtd-theme
           git clone $REPO .
-          [[ $NEEDS_BUILD == 'true' ]] && pip install .
           DOCDIR=$(dirname $(find doc* -name Makefile))
-          cd $DOCDIR
-          test -f requirements.txt && pip install -r requirements.txt
-          make html
-          doc2dash ${NAME:+-n $NAME} ${ICON:+-i $ICON} _build/html
-          tar -czf ${MAINDIR}/${NAME}.tgz ${NAME}.docset
+          if [ -f tox.ini ] && (tox -l | grep -q docs) ; then
+            tox -e docs
+          else
+            [[ $NEEDS_BUILD == 'true' ]] && pip install .
+            test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
+            make -C $DOCDIR html
+          fi
+          doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} $DOCDIR/_build/html
+          tar -czf ${NAME}.tgz ${NAME}.docset
       - name: Upload docset
         uses: actions/upload-artifact@v3
         with:
