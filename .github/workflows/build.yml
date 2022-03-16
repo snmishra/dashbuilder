@@ -16,7 +16,11 @@ on:
       icon:
         description: 'PNG icon path'
         type: string
-        required: false 
+        required: false
+      needs_build:
+        description: "Docs build requires main package build"
+        type: boolean
+        required: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,6 +32,7 @@ jobs:
       REPO: ${{ github.event.inputs.repo }}
       NAME: ${{ github.event.inputs.name }}
       ICON: ${{ github.event.inputs.icon }}
+      NEEDS_BUILD: ${{ github.event.inputs.needs_build }}
       SPHINXBUILD: sphinx-build
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -43,6 +48,7 @@ jobs:
           MAINDIR=$(pwd)
           pip install doc2dash sphinx-rtd-theme
           git clone $REPO .
+          [[ $NEEDS_BUILD == 'true' ]] && pip install .
           DOCDIR=$(dirname $(find doc* -name Makefile))
           cd $DOCDIR
           test -f requirements.txt && pip install -r requirements.txt
