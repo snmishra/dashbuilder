@@ -46,12 +46,12 @@ jobs:
       - name: Build docs
         run: |
           pip install doc2dash sphinx-rtd-theme tox
-          git clone $REPO .
+          git clone --depth=1 $REPO .
           DOCDIR=$(dirname $(find doc* -name Makefile))
           if [ -f tox.ini ] && (tox -l | grep -q docs) ; then
             tox -e docs
           else
-            [[ $NEEDS_BUILD == 'true' ]] && pip install .
+            [[ $NEEDS_BUILD == 'true' ]] && pip install -e .
             test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
             make -C $DOCDIR html
           fi
