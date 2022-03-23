@@ -61,13 +61,14 @@ jobs:
           git clone --depth=1 $REPO .
           DOCDIR=$(dirname $(find doc* -name Makefile))
           if [ -f tox.ini ] && (tox -l | grep -q docs) ; then
-            tox -e docs
-          else
+            tox -e docs | tee buildlog
+            else
             [[ $NEEDS_BUILD == 'true' ]] && pip install -e .
             test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
-            make -C $DOCDIR html
+            make -C $DOCDIR html | tee buildlog
           fi
-          doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} $DOCDIR/_build/html
+          HTMLDIR=$(awk '/The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' buildlog)
+          doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} ${HTMLDIR:-$DOCDIR/_build/html}
           tar -czf ${NAME}.tgz ${NAME}.docset
       - name: Upload docset
         uses: actions/upload-artifact@v3
