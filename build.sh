@@ -1,5 +1,6 @@
 #!/bin/sh
 pip install doc2dash sphinx-rtd-theme tox
+git clone --depth 1 "${REPO}" repo
 cd repo
 DOCDIR=$(dirname $(find doc* -name Makefile))
 if [ -z "$NAME" ] ; then
