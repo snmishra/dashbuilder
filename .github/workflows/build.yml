@@ -15,19 +15,19 @@ on:
         type: choice
         default: '3.9'
         options:
-        - '3.8'
-        - '3.9'
-        - '3.10'
+          - '3.8'
+          - '3.9'
+          - '3.10'
       name:
         description: 'Name of the output'
-        required: false 
+        required: false
         type: string
       icon:
         description: 'PNG icon path'
         type: string
         required: false
       needs_build:
-        description: "Docs build requires main package build"
+        description: 'Docs build requires main package build'
         type: boolean
         required: false
 
@@ -52,24 +52,19 @@ jobs:
       - name: Cache Python packages
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-pypi-cache          
+          key: ${{ runner.os }}-pypi-cache
           path: |
             ~/.cache/pip
+      - name: Checkout builder
+        uses: actions/checkout@v3
+      - name: Checkout doc repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.inputs.repo }}
+          path: repo
       - name: Build docs
         run: |
-          pip install doc2dash sphinx-rtd-theme tox
-          git clone --depth=1 $REPO .
-          DOCDIR=$(dirname $(find doc* -name Makefile))
-          if [ -f tox.ini ] && (tox -l | grep -q docs) ; then
-            tox -e docs | tee buildlog
-            else
-            [[ $NEEDS_BUILD == 'true' ]] && pip install -e .
-            test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
-            make -C $DOCDIR html | tee buildlog
-          fi
-          HTMLDIR=$(awk '/The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' buildlog)
-          doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} ${HTMLDIR:-$DOCDIR/_build/html}
-          tar -czf ${NAME}.tgz ${NAME}.docset
+          sh build.sh
       - name: Upload docset
         uses: actions/upload-artifact@v3
         with:
