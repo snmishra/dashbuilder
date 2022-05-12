@@ -16,9 +16,9 @@ else
   make -C $DOCDIR html | tee doc_build.log
 fi
 
-BUILT_HTML=$(awk '/The HTML pages are in/ {sub(/\.$/, ""); print $NF}' doc_build.log)
+BUILT_HTML=$(awk '/^The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' doc_build.log)
 if [ -n "$BUILT_HTML" ]; then
-  doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} "$DOCDIR/${BUILT_HTML:-_build/html}"
+  doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} "$DOCDIR/${BUILT_HTML}"
   tar -czf ../${NAME}.tgz ${NAME}.docset
 else
   exit 1
