@@ -10,15 +10,16 @@ fi
 
 if [ -f tox.ini ] && (tox -l | grep -q docs); then
   tox -e docs | tee doc_build.log
+  BUILT_HTML="$(awk '/^The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' doc_build.log)"
 else
   if [ "$NEEDS_BUILD" = 'true' ] ; then pip install -e .; fi
   test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
   make -C $DOCDIR html | tee doc_build.log
+  BUILT_HTML="$DOCDIR/$(awk '/^The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' doc_build.log)"
 fi
 
-BUILT_HTML=$(awk '/^The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' doc_build.log)
 if [ -n "$BUILT_HTML" ]; then
-  doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} "$DOCDIR/${BUILT_HTML}"
+  doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} "${BUILT_HTML}"
   tar -czf ../${NAME}.tgz ${NAME}.docset
 else
   exit 1
