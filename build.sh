@@ -9,7 +9,7 @@ if [ -z "$NAME" ] ; then
 fi
 
 if [ -f tox.ini ] && (tox -l | grep -q docs); then
-  tox -e docs
+  tox -e docs | tee doc_build.log
 else
   if [ "$NEEDS_BUILD" = 'true' ] ; then pip install -e .; fi
   test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
