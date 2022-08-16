@@ -60,8 +60,7 @@ jobs:
       - name: Build docs
         run: |
           sh build.sh
-      - name: Upload docset
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.NAME }}.tgz
-          path: ${{ env.NAME }}.tgz
+      - name: Upload to JFrog
+        run: |
+          curl -H "X-JFrog-Art-Api:${{ secrets.JFROG_KEY }}" -T ${{ env.NAME }}.tgz "https://zealdocsets.jfrog.io/artifactory/zeal-generic-local/${{ env.NAME }}.tgz"
+      
