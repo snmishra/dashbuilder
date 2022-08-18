@@ -1,11 +1,12 @@
 #!/bin/sh
 pip install doc2dash sphinx-rtd-theme tox
-git clone --depth 1 "${REPO}" repo
+git clone --depth 1 ${VERSION:+-b $VERSION} "${REPO}" repo
 cd repo
 DOCDIR=$(dirname $(find doc* -name Makefile))
 if [ -z "$NAME" ] ; then
   conf_py=$(find $DOCDIR -name conf.py)
   NAME=$(awk '/project/ {gsub(/["'\'']/, ""); print $NF}' $conf_py)
+  echo "NAME='$NAME'" >> $GITHUB_ENV
 fi
 
 if [ -f tox.ini ] && (tox -l | grep -q docs); then
