@@ -63,7 +63,7 @@ jobs:
       - name: Upload to JFrog
         run: |
           curl -H "X-JFrog-Art-Api:${{ secrets.JFROG_KEY }}" -T ${{ env.NAME }}.tgz "https://zealdocsets.jfrog.io/artifactory/zeal-generic-local/${{ env.NAME }}.tgz"
-          cat > ${{ env.NAME }}.xml <<EOF-
+          cat > ${{ env.NAME }}.xml <<-EOF
           <entry>
             <name>pika</name>
             <version>latest</version>
