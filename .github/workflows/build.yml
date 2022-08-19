@@ -22,6 +22,10 @@ on:
         description: 'Name of the output'
         required: false
         type: string
+      version:
+        description: 'Version of the repo'
+        required: false
+        type: string
       icon:
         description: 'PNG icon path'
         type: string
@@ -39,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPO: ${{ github.event.inputs.repo }}
+      VERSION: ${{ github.event.inputs.version }}
       NAME: ${{ github.event.inputs.name }}
       ICON: ${{ github.event.inputs.icon }}
       NEEDS_BUILD: ${{ github.event.inputs.needs_build }}
@@ -65,8 +70,8 @@ jobs:
           curl -H "X-JFrog-Art-Api:${{ secrets.JFROG_KEY }}" -T ${{ env.NAME }}.tgz "https://zealdocsets.jfrog.io/artifactory/zeal-generic-local/${{ env.NAME }}.tgz"
           cat > ${{ env.NAME }}.xml <<-EOF
           <entry>
-            <name>pika</name>
-            <version>latest</version>
+            <name>${{ env.NAME }}</name>
+            <version>${{ env.VERSION }}</version>
             <url>
               https://zealdocsets.jfrog.io/ui/native/zeal-generic-local/${{ env.NAME }}.tgz
             </url>
