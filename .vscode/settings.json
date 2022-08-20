@@ -1,0 +1,8 @@
+{
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      "file:///home/satya/exp/dashbuilder/.github/workflows/build.yml",
+      "file:///home/satya/exp/dashbuilder/.github/actions/docs.yml"
+    ]
+  }
+}
