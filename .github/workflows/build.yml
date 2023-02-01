@@ -42,6 +42,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    environment: Default
     env:
       REPO: ${{ github.event.inputs.repo }}
       VERSION: ${{ github.event.inputs.version }}
