@@ -125,7 +125,7 @@ def build_mkdocs(name: str):
 
 
 @click.command()
-@click.argument("repo")
+@click.argument("repo", envvar="REPO")
 @click.option("--name", default=None, envvar="NAME", help="Name of the docset")
 @click.option(
     "--version",

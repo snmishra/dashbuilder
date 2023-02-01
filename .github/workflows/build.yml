@@ -77,10 +77,8 @@ jobs:
           <entry>
             <name>${{ env.NAME }}</name>
             <version>${{ env.VERSION }}</version>
-            <url>
-              https://zealdocsets.jfrog.io/ui/native/zeal-generic-local/${{ env.NAME }}.tgz
-            </url>
-            <other-versions> </other-versions>
+            <url>https://dl.cloudsmith.io/public/satya-s-open-source/zealdocsets/raw/names/click/files/${{ env.NAME }}.tgz</url>
+            <other-versions></other-versions>
           </entry>
           EOF
           cloudsmith push raw satya-s-open-source/zealdocsets ${{ env.NAME }}.xml
