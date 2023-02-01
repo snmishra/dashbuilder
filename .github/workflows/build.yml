@@ -69,10 +69,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           python -m bin.build
-      - name: Upload to JFrog
+      - name: Upload to Cloudsmith
         run: |
           pip install --upgrade cloudsmith-cli
-          cloudsmith push raw satya-s-open-source/zealdocsets ${VERSION:+"--version" $VERSION} ${{ env.NAME }}.tgz
+          cloudsmith push raw satya-s-open-source/zealdocsets ${VERSION:+"--version" $VERSION} --republish ${{ env.NAME }}.tgz
           cat > ${{ env.NAME }}.xml <<-EOF
           <entry>
             <name>${{ env.NAME }}</name>
