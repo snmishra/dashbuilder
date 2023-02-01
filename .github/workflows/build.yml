@@ -13,11 +13,12 @@ on:
         description: 'Python version'
         required: true
         type: choice
-        default: '3.9'
+        default: '3.11'
         options:
           - '3.8'
           - '3.9'
           - '3.10'
+          - '3.11'
       name:
         description: 'Name of the output'
         required: false
@@ -48,6 +49,7 @@ jobs:
       ICON: ${{ github.event.inputs.icon }}
       NEEDS_BUILD: ${{ github.event.inputs.needs_build }}
       SPHINXBUILD: sphinx-build
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_KEY }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -64,10 +66,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Build docs
         run: |
-          sh build.sh
+          python -m bin.build
       - name: Upload to JFrog
         run: |
-          curl -H "X-JFrog-Art-Api:${{ secrets.JFROG_KEY }}" -T ${{ env.NAME }}.tgz "https://zealdocsets.jfrog.io/artifactory/zeal-generic-local/${{ env.NAME }}.tgz"
+          pip install --upgrade cloudsmith-cli
+          cloudsmith push raw satya-s-open-source/zealdocsets ${VERSION:+"--version" $VERSION} ${{ env.NAME }}.tgz
           cat > ${{ env.NAME }}.xml <<-EOF
           <entry>
             <name>${{ env.NAME }}</name>
@@ -78,5 +81,4 @@ jobs:
             <other-versions> </other-versions>
           </entry>
           EOF
-          curl -H "X-JFrog-Art-Api:${{ secrets.JFROG_KEY }}" -T ${{ env.NAME }}.xml "https://zealdocsets.jfrog.io/artifactory/zeal-generic-local/${{ env.NAME }}.xml"
-
+          cloudsmith push raw satya-s-open-source/zealdocsets ${{ env.NAME }}.xml

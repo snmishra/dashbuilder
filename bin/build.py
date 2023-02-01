@@ -8,6 +8,7 @@ from . import abs2rel
 from .add_dash_anchors import add_dash_anchors
 from shutil import copytree, copy2
 from .yaml2sqlite import yaml2sqlite
+import click
 
 
 def get_name(conf_py: Path) -> str:
@@ -38,6 +39,7 @@ def run_tox() -> str:
 def build_sphinx(
     sphinx_make: Path,
     name: str | None = None,
+    *,
     needs_build: bool = False,
     icon: str | None = None,
 ) -> None:
@@ -65,7 +67,7 @@ def build_sphinx(
 
     if built_html:
         subprocess.check_call(
-            ["doc2dash", "-n", "name"]
+            ["doc2dash", "-n", name]
             + (["-i", DOCDIR / icon] if icon else [])
             + [built_html]
         )
@@ -122,7 +124,32 @@ def build_mkdocs(name: str):
         )
 
 
-def run(repo: str, name: str | None = None, version: str | None = None):
+@click.command()
+@click.argument("repo")
+@click.option("--name", default=None, envvar="NAME", help="Name of the docset")
+@click.option(
+    "--version",
+    default=None,
+    envvar="VERSION",
+    help="Version of repo to use for the docset",
+)
+@click.option(
+    "--icon", default=None, envvar="ICON", help="Path to icon inside doc directory"
+)
+@click.option(
+    "--needs-build",
+    is_flag=True,
+    default=False,
+    envvar="NEEDS_BUILD",
+    help="Do we need to build the package first?",
+)
+def run(
+    repo: str,
+    name: str | None = None,
+    version: str | None = None,
+    icon: str | None = None,
+    needs_build: bool = False,
+):
     # run pip install
     subprocess.check_call(
         [
@@ -153,6 +180,10 @@ def run(repo: str, name: str | None = None, version: str | None = None):
         if name:
             build_mkdocs(name)
     else:
-        build_sphinx(sphinx_make, name)
+        build_sphinx(sphinx_make, name, icon=icon, needs_build=needs_build)
     # tgz the docset
     subprocess.check_call(["tar", "-cvzf", f"../{name}.tgz", f"{name}.docset"])
+
+
+if __name__ == "__main__":
+    run()
