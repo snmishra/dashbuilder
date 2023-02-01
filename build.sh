@@ -8,8 +8,8 @@ build_sphinx() {
   fi
 
   if [ -f tox.ini ] && (tox -l | grep -q docs); then
-    tox -e docs
-    BUILT_HTML="$(awk '/^The HTML pages are in/ {sub(/\.$/, ""); print $NF; exit}' doc_build.log)"
+    tox -e docs | tee doc_build.log
+    BUILT_HTML="$(awk '/^The HTML pages are in/ { res = gensub(/^.*(\.tox\/.*)\.$/, "\\1"); print $NF; exit}' doc_build.log)"
   else
     if [ "$NEEDS_BUILD" = 'true' ]; then pip install -e .; fi
     test -f $DOCDIR/requirements.txt && pip install -r $DOCDIR/requirements.txt
@@ -20,7 +20,7 @@ build_sphinx() {
   if [ -n "$BUILT_HTML" ]; then
     doc2dash ${NAME:+-n $NAME} ${ICON:+-i $DOCDIR/$ICON} "${BUILT_HTML}"
   else
-    exit 1
+    return 1
   fi
 }
 
@@ -69,14 +69,18 @@ build_mkdocs() {
 EOF
 }
 
-pip install doc2dash sphinx-rtd-theme tox mkdocs lxml pyyaml
-git clone --depth 1 ${VERSION:+-b $VERSION} "${REPO}" repo
-cd repo
+setup() {
+  pip install doc2dash sphinx-rtd-theme tox mkdocs lxml pyyaml
+  git clone --depth 1 ${VERSION:+-b $VERSION} "${REPO}" repo
+  cd repo
+}
+
+setup
 SPHINX_MAKE=$(find doc* -name Makefile)
 if [ -n "$SPHINX_MAKE" ]; then
-  build_sphinx
+  build_sphinx || exit 1
 elif [ -f mkdocs.yml ]; then
-  build_mkdocs
+  build_mkdocs || exit 1
 else
   exit 1
 fi
